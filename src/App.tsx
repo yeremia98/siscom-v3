@@ -1,85 +1,107 @@
 /**
- * SISCOM ERP (siscom.co.id) SPA Main Application
- * Enterprise Grade Prototype with 3D Mascot, Dark/Light Theme Switching,
- * Verified Corporate Data, Interactive Multi-Step Consultation, and Full Modular Architecture.
+ * SISCOM ERP v3 - Minimalist Multi-Page SPA
+ * Engineered under Swiss Minimalism & Anti-AI-Slop Constitution
  */
 
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { Stats } from './components/Stats';
-import { ModulesSection } from './components/ModulesSection';
-import { CapabilitiesSection } from './components/CapabilitiesSection';
-import { MethodologySection } from './components/MethodologySection';
-import { ClientPortfolioSection } from './components/ClientPortfolioSection';
-import { SecurityCompliance } from './components/SecurityCompliance';
-import { FaqSection } from './components/FaqSection';
-import { CallToAction } from './components/CallToAction';
 import { Footer } from './components/Footer';
-import { FloatingWidgets } from './components/FloatingWidgets';
-import { ConsultationModal } from './components/ConsultationModal';
-import { ProductDetailPage } from './components/ProductDetailPage';
-import { DedicatedBlogPage } from './components/DedicatedBlogPage';
-import { DedicatedFaqPage } from './components/DedicatedFaqPage';
+import { HomePage } from './pages/HomePage';
+import { SolutionModulesPage } from './pages/SolutionModulesPage';
+import { VerticalModulesPage } from './pages/VerticalModulesPage';
+import { MethodologyPage } from './pages/MethodologyPage';
+import { ClientsPage } from './pages/ClientsPage';
+import { SecurityPage } from './pages/SecurityPage';
+import { ComparisonPage } from './pages/ComparisonPage';
+import { ArticlesPage } from './pages/ArticlesPage';
+import { FaqPage } from './pages/FaqPage';
+import { AboutPage } from './pages/AboutPage';
+import { DemoPage } from './pages/DemoPage';
+import { VerificationPage } from './pages/VerificationPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { ModuleQuickViewModal } from './components/ModuleQuickViewModal';
+import { DemoModal } from './components/DemoModal';
+import { VERTICAL_MODULES, SOLUTION_MODULES } from './content/modules';
+import { FISCAL_ARTICLES } from './content/articles';
 
 function AppContent() {
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
     if (typeof window === 'undefined') return '/';
     const path = window.location.pathname;
-    if (path && path !== '/') return path;
+    if (path && path !== '') return path;
     const hash = window.location.hash.replace('#', '');
     if (hash && hash.startsWith('/')) return hash;
     return '/';
   });
 
-  const [isConsultationOpen, setIsConsultationOpen] = useState(false);
-  const [consultationSector, setConsultationSector] = useState<string | undefined>(undefined);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [demoInitialModule, setDemoInitialModule] = useState<string | undefined>(undefined);
+  const [quickViewSlug, setQuickViewSlug] = useState<string | null>(null);
 
-  // Handle browser popstate navigation (Back / Forward)
+  // Sync route on popstate (browser back / forward)
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname || '/';
       setCurrentRoute(path);
-      window.scrollTo(0, 0);
+      setQuickViewSlug(null);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const openConsultation = (sector?: string) => {
-    setConsultationSector(sector);
-    setIsConsultationOpen(true);
-  };
+  // Update document title per route (Strictly <= 60 chars)
+  useEffect(() => {
+    let title = 'SISCOM ERP: Software ERP Terintegrasi Indonesia';
 
-  const closeConsultation = () => {
-    setIsConsultationOpen(false);
-    setConsultationSector(undefined);
-  };
-
-  const handleNavigate = (route: string) => {
-    // If it's a section anchor on home page
-    if (route.startsWith('#') || route.startsWith('/#')) {
-      const anchorId = route.replace('/#', '').replace('#', '');
-      if (currentRoute !== '/') {
-        setCurrentRoute('/');
-        try {
-          window.history.pushState({}, '', '/');
-        } catch {
-          // ignore
-        }
-      }
-      setTimeout(() => {
-        const el = document.getElementById(anchorId);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 50);
-      return;
+    if (currentRoute === '/') {
+      title = 'SISCOM ERP: Software ERP Terintegrasi Indonesia';
+    } else if (currentRoute.startsWith('/modul-solusi/')) {
+      const slug = currentRoute.replace('/modul-solusi/', '');
+      const mod = SOLUTION_MODULES.find((m) => m.slug === slug);
+      if (mod) title = `${mod.name} | SISCOM ERP`;
+    } else if (currentRoute === '/modul-solusi') {
+      title = 'Modul Solusi Fungsional | SISCOM ERP';
+    } else if (currentRoute.startsWith('/modul-vertikal/')) {
+      const slug = currentRoute.replace('/modul-vertikal/', '');
+      const mod = VERTICAL_MODULES.find((m) => m.slug === slug);
+      if (mod) title = `${mod.name} | SISCOM ERP`;
+    } else if (currentRoute === '/modul-vertikal') {
+      title = 'Modul Vertikal Sektoral | SISCOM ERP';
+    } else if (currentRoute === '/metodologi') {
+      title = 'Metodologi 6 Langkah Implementasi | SISCOM ERP';
+    } else if (currentRoute === '/klien') {
+      title = 'Sektor Industri yang Dilayani | SISCOM ERP';
+    } else if (currentRoute === '/keamanan-data') {
+      title = 'Penempatan Server & Keamanan Data | SISCOM ERP';
+    } else if (currentRoute === '/komparasi') {
+      title = 'Checklist Memilih Vendor ERP | SISCOM ERP';
+    } else if (currentRoute.startsWith('/wawasan-fiskal/')) {
+      const slug = currentRoute.replace('/wawasan-fiskal/', '');
+      const art = FISCAL_ARTICLES.find((a) => a.slug === slug);
+      if (art) title = `${art.title} | SISCOM ERP`;
+    } else if (currentRoute === '/wawasan-fiskal') {
+      title = 'Wawasan Alur Fiskal & Sistem | SISCOM ERP';
+    } else if (currentRoute === '/faq') {
+      title = 'Pertanyaan Faktual (FAQ) | SISCOM ERP';
+    } else if (currentRoute === '/tentang-siscom') {
+      title = 'Tentang PT Shan Informasi Sistem | SISCOM ERP';
+    } else if (currentRoute === '/demo') {
+      title = 'Jadwalkan Demo Sistem ERP | SISCOM ERP';
+    } else if (currentRoute === '/verifikasi') {
+      title = 'Verifikasi Saluran Resmi | SISCOM ERP';
+    } else if (currentRoute === '/kebijakan-privasi') {
+      title = 'Kebijakan Privasi Data Formulir | SISCOM ERP';
     }
 
+    document.title = title;
+  }, [currentRoute]);
+
+  const navigateTo = (route: string) => {
     setCurrentRoute(route);
+    setQuickViewSlug(null);
     try {
       window.history.pushState({}, '', route);
     } catch {
@@ -88,128 +110,163 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Route Resolver
-  const renderCurrentRoute = () => {
+  const handleOpenDemo = (moduleSlug?: string) => {
+    setDemoInitialModule(moduleSlug);
+    setIsDemoModalOpen(true);
+  };
+
+  const handleQuickView = (slug: string) => {
+    setQuickViewSlug(slug);
+    try {
+      window.history.pushState({ quickView: slug }, '', `/modul-vertikal/${slug}`);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleCloseQuickView = () => {
+    setQuickViewSlug(null);
+    try {
+      if (window.location.pathname.startsWith('/modul-vertikal/')) {
+        window.history.pushState({}, '', currentRoute);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  // Route Rendering Logic
+  const renderPage = () => {
+    // 1. Home Page
     if (currentRoute === '/' || currentRoute === '') {
       return (
-        <main>
-          <Hero 
-            onNavigate={handleNavigate} 
-            onOpenConsultation={(sector) => openConsultation(sector)} 
-          />
-          <Stats />
-          <ModulesSection 
-            onOpenConsultation={(sector) => openConsultation(sector)} 
-          />
-          <CapabilitiesSection 
-            onOpenConsultation={() => openConsultation()} 
-          />
-          <MethodologySection 
-            onOpenConsultation={() => openConsultation()} 
-          />
-          <ClientPortfolioSection 
-            onOpenConsultation={(sector) => openConsultation(sector)} 
-          />
-          <SecurityCompliance />
-          <FaqSection 
-            onNavigate={handleNavigate} 
-            onOpenConsultation={(sector) => openConsultation(sector)} 
-          />
-          <CallToAction 
-            onOpenConsultation={() => openConsultation()} 
-          />
-        </main>
-      );
-    }
-
-    if (currentRoute.startsWith('/product/')) {
-      const slug = currentRoute.replace('/product/', '');
-      return (
-        <ProductDetailPage 
-          slug={slug} 
-          onNavigate={handleNavigate} 
-          onOpenConsultation={(sector) => openConsultation(sector)} 
+        <HomePage
+          onNavigate={navigateTo}
+          onOpenDemo={handleOpenDemo}
+          onQuickViewModule={handleQuickView}
         />
       );
     }
 
-    if (currentRoute === '/blog') {
+    // 2. Modul Solusi (/modul-solusi and /modul-solusi/:slug)
+    if (currentRoute.startsWith('/modul-solusi')) {
+      const slug = currentRoute.replace('/modul-solusi', '').replace('/', '');
       return (
-        <DedicatedBlogPage 
-          onNavigate={handleNavigate} 
-          onOpenConsultation={(sector) => openConsultation(sector)} 
+        <SolutionModulesPage
+          activeSlug={slug || undefined}
+          onNavigate={navigateTo}
+          onOpenDemo={handleOpenDemo}
         />
       );
     }
 
+    // 3. Modul Vertikal (/modul-vertikal and /modul-vertikal/:slug)
+    if (currentRoute.startsWith('/modul-vertikal')) {
+      const slug = currentRoute.replace('/modul-vertikal', '').replace('/', '');
+      return (
+        <VerticalModulesPage
+          activeSlug={slug || undefined}
+          onNavigate={navigateTo}
+          onOpenDemo={handleOpenDemo}
+          onQuickView={handleQuickView}
+        />
+      );
+    }
+
+    // 4. Metodologi
+    if (currentRoute === '/metodologi') {
+      return <MethodologyPage onNavigate={navigateTo} onOpenDemo={() => handleOpenDemo()} />;
+    }
+
+    // 5. Klien
+    if (currentRoute === '/klien') {
+      return <ClientsPage onNavigate={navigateTo} onOpenDemo={() => handleOpenDemo()} />;
+    }
+
+    // 6. Keamanan Data
+    if (currentRoute === '/keamanan-data') {
+      return <SecurityPage onNavigate={navigateTo} onOpenDemo={() => handleOpenDemo()} />;
+    }
+
+    // 7. Komparasi
+    if (currentRoute === '/komparasi') {
+      return <ComparisonPage onNavigate={navigateTo} onOpenDemo={() => handleOpenDemo()} />;
+    }
+
+    // 8. Wawasan Fiskal (/wawasan-fiskal and /wawasan-fiskal/:slug)
+    if (currentRoute.startsWith('/wawasan-fiskal')) {
+      const slug = currentRoute.replace('/wawasan-fiskal', '').replace('/', '');
+      return (
+        <ArticlesPage
+          activeSlug={slug || undefined}
+          onNavigate={navigateTo}
+          onOpenDemo={() => handleOpenDemo()}
+        />
+      );
+    }
+
+    // 9. FAQ
     if (currentRoute === '/faq') {
-      return (
-        <DedicatedFaqPage 
-          onNavigate={handleNavigate} 
-          onOpenConsultation={(sector) => openConsultation(sector)} 
-        />
-      );
+      return <FaqPage onNavigate={navigateTo} onOpenDemo={() => handleOpenDemo()} />;
     }
 
-    // Default fallback to home
-    return (
-      <main>
-        <Hero 
-          onNavigate={handleNavigate} 
-          onOpenConsultation={(sector) => openConsultation(sector)} 
-        />
-        <Stats />
-        <ModulesSection 
-          onOpenConsultation={(sector) => openConsultation(sector)} 
-        />
-        <CapabilitiesSection 
-          onOpenConsultation={() => openConsultation()} 
-        />
-        <MethodologySection 
-          onOpenConsultation={() => openConsultation()} 
-        />
-        <ClientPortfolioSection 
-          onOpenConsultation={(sector) => openConsultation(sector)} 
-        />
-        <SecurityCompliance />
-        <FaqSection 
-          onNavigate={handleNavigate} 
-          onOpenConsultation={(sector) => openConsultation(sector)} 
-        />
-        <CallToAction 
-          onOpenConsultation={() => openConsultation()} 
-        />
-      </main>
-    );
+    // 10. Tentang SISCOM
+    if (currentRoute === '/tentang-siscom') {
+      return <AboutPage onNavigate={navigateTo} onOpenDemo={() => handleOpenDemo()} />;
+    }
+
+    // 11. Demo Form Page
+    if (currentRoute === '/demo') {
+      return <DemoPage onNavigate={navigateTo} />;
+    }
+
+    // 12. Verifikasi Kanal Resmi
+    if (currentRoute === '/verifikasi') {
+      return <VerificationPage onNavigate={navigateTo} />;
+    }
+
+    // 13. Kebijakan Privasi
+    if (currentRoute === '/kebijakan-privasi') {
+      return <PrivacyPolicyPage onNavigate={navigateTo} />;
+    }
+
+    // 14. Fallback 404
+    return <NotFoundPage onNavigate={navigateTo} />;
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans selection:bg-orange-500 selection:text-white transition-colors duration-200">
-      <Header 
-        currentRoute={currentRoute} 
-        onNavigate={handleNavigate} 
-        onOpenConsultation={(sector) => openConsultation(sector)} 
+    <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-main)] transition-colors duration-150">
+      {/* Persistent Header */}
+      <Header
+        currentRoute={currentRoute}
+        onNavigate={navigateTo}
+        onOpenDemo={() => handleOpenDemo()}
       />
 
-      <div className="flex-1">
-        {renderCurrentRoute()}
-      </div>
+      {/* Main Content Area */}
+      <main className="flex-1 w-full" id="main-content">
+        {renderPage()}
+      </main>
 
-      <Footer 
-        onNavigate={handleNavigate} 
-        onOpenConsultation={(sector) => openConsultation(sector)} 
+      {/* Persistent Footer */}
+      <Footer
+        onNavigate={navigateTo}
+        onOpenDemo={() => handleOpenDemo()}
       />
 
-      {/* Floating Action Speed Dial Widget */}
-      <FloatingWidgets 
-        onOpenConsultation={(sector) => openConsultation(sector)} 
+      {/* Module Quick View Modal (Background Location Pattern) */}
+      <ModuleQuickViewModal
+        slug={quickViewSlug}
+        onClose={handleCloseQuickView}
+        onNavigateToFullPage={(slug) => navigateTo(`/modul-vertikal/${slug}`)}
+        onOpenDemo={(slug) => handleOpenDemo(slug)}
       />
 
-      {/* Interactive Multi-Step Consultation & Lead Scoring Modal */}
-      <ConsultationModal 
-        isOpen={isConsultationOpen} 
-        onClose={closeConsultation} 
-        prefilledSector={consultationSector} 
+      {/* Global Demo Modal Triggered from Header / Ribbons */}
+      <DemoModal
+        isOpen={isDemoModalOpen}
+        onClose={() => setIsDemoModalOpen(false)}
+        initialModule={demoInitialModule}
       />
     </div>
   );

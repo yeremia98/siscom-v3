@@ -7,10 +7,38 @@
   --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+
+  /* Motion Tokens */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-sheen: 650ms;
+
+  /* Theme Tokens: Light */
+  --bg-app: #FAFAF8;
+  --surface-1: #FFFFFF;
+  --surface-2: #F3F4F1;
+  --border-hairline: #E6E6E1;
+  --text-main: #0E1320;
+  --text-muted: #5B6475;
+  --brand-accent: #FF6A1A;
+}
+
+.dark {
+  /* Theme Tokens: Dark */
+  --bg-app: #070A12;
+  --surface-1: #0E1320;
+  --surface-2: #141A2A;
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --text-main: #E8ECF4;
+  --text-muted: #9AA4B8;
+  --brand-accent: #FF6A1A;
 }
 
 html {
   font-family: var(--font-body);
+  background-color: var(--bg-app);
+  color: var(--text-main);
   transition: background-color 0.2s ease, color 0.2s ease;
   scroll-behavior: smooth;
 }
@@ -19,6 +47,8 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-app);
+  color: var(--text-main);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -30,80 +60,163 @@ code, kbd, samp, pre, .font-mono {
   font-family: var(--font-mono);
 }
 
-/* Custom scrollbar for enterprise usability */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.4);
+  background: rgba(156, 163, 175, 0.3);
   border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.6);
+  background: rgba(107, 114, 128, 0.5);
 }
 
-/* Mascot 3D floating and glowing animations */
+/* Primary Button with Sheen & Shadow Lift */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #FF6A1A;
+  color: #0A0D14;
+  font-weight: 600;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  min-height: 44px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out),
+              background-color var(--dur-fast) linear;
+}
+
+.btn-primary > .btn-label, .btn-primary > .btn-icon {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+  transform: translateX(0) skewX(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px -10px rgba(255, 106, 26, 0.6), 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  .btn-primary:hover::before {
+    opacity: 1;
+    animation: sheen var(--dur-sheen) var(--ease-out) 1 both;
+  }
+  .btn-primary:hover .btn-icon {
+    transform: translateX(3px);
+  }
+}
+
+.btn-primary:focus-visible::before {
+  opacity: 1;
+  animation: sheen var(--dur-sheen) var(--ease-out) 1 both;
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 80ms;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-hairline);
+  font-weight: 500;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition: transform var(--dur-base) var(--ease-out),
+              border-color var(--dur-fast) linear,
+              background-color var(--dur-fast) linear;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-secondary:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 106, 26, 0.4);
+    background-color: rgba(255, 106, 26, 0.06);
+  }
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(0) skewX(-18deg);
+  }
+  to {
+    transform: translateX(430%) skewX(-18deg);
+  }
+}
+
+/* Mascot Idle Float Animation */
 @keyframes mascot-float {
   0%, 100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-10px);
   }
 }
 
-@keyframes mascot-shadow {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-  50% {
-    transform: scale(0.85);
-    opacity: 0.22;
-  }
+.mascot-float-wrapper {
+  animation: mascot-float 3.6s ease-in-out infinite;
 }
 
-@keyframes antenna-glow {
-  0%, 100% {
-    opacity: 0.25;
-    transform: translate(-50%, 0) scale(1);
+.mascot-float-paused {
+  animation-play-state: paused;
+}
+
+/* Accessible reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  50% {
-    opacity: 0.65;
-    transform: translate(-50%, 0) scale(1.15);
+  .btn-primary, .btn-primary::before, .btn-primary .btn-icon {
+    transition: none;
+    animation: none;
   }
-}
-
-@keyframes pulse-led {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
+  .btn-primary:hover {
+    transform: none;
   }
-  50% {
-    opacity: 0.4;
-    transform: scale(0.85);
+  .mascot-float-wrapper {
+    animation: none;
   }
-}
-
-.animate-mascot-float {
-  animation: mascot-float 3.5s ease-in-out infinite;
-}
-
-.animate-mascot-shadow {
-  animation: mascot-shadow 3.5s ease-in-out infinite;
-}
-
-.animate-antenna-glow {
-  animation: antenna-glow 2.5s ease-in-out infinite;
-}
-
-.animate-pulse-led {
-  animation: pulse-led 1.8s ease-in-out infinite;
 }

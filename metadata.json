@@ -1,6 +1,6 @@
 {
   "name": "SISCOM ERP: Software ERP Terintegrasi Indonesia",
-  "description": "Platform ERP enterprise Indonesia untuk kontraktor, manufaktur, retail, dan manajemen properti. Dilengkapi kendali alur bisnis dan kepatuhan perpajakan.",
+  "description": "Software ERP Indonesia untuk kontraktor, distributor, dan manufaktur. Realisasi vs RAB dan RAP, mutasi stok, formula BOM, dan pembukuan buku besar otomatis.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
