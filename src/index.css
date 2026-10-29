@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Enterprise Theme Font and Color Variables */
+:root {
+  --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+}
+
+html {
+  font-family: var(--font-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+code, kbd, samp, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom scrollbar for enterprise usability */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.6);
+}
+
+/* Mascot 3D floating and glowing animations */
+@keyframes mascot-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes mascot-shadow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(0.85);
+    opacity: 0.22;
+  }
+}
+
+@keyframes antenna-glow {
+  0%, 100% {
+    opacity: 0.25;
+    transform: translate(-50%, 0) scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: translate(-50%, 0) scale(1.15);
+  }
+}
+
+@keyframes pulse-led {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+.animate-mascot-float {
+  animation: mascot-float 3.5s ease-in-out infinite;
+}
+
+.animate-mascot-shadow {
+  animation: mascot-shadow 3.5s ease-in-out infinite;
+}
+
+.animate-antenna-glow {
+  animation: antenna-glow 2.5s ease-in-out infinite;
+}
+
+.animate-pulse-led {
+  animation: pulse-led 1.8s ease-in-out infinite;
+}
