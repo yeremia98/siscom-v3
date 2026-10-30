@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SISCOM ERP – Uji Widget AI</title>
+<style>
+/* ===== HALAMAN UJI SAJA (hapus saat integrasi ke landing page) ===== */
+body{margin:0;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f6f8fc;color:#14213d}
+.demo-nav{display:flex;flex-wrap:wrap;gap:8px;padding:14px 20px;background:#fff;border-bottom:1px solid #dde2ea}
+.demo-nav button{border:1px solid #0f3b78;background:#fff;color:#0f3b78;border-radius:8px;padding:6px 12px;cursor:pointer}
+.demo-main{max-width:760px;margin:40px auto;padding:0 20px}
+</style>
+</head>
+<body>
+<nav class="demo-nav" aria-label="Simulasi navigasi">
+  <strong>Simulasi rute:</strong>
+  <button data-go="/">Beranda</button><button data-go="/#produk">Produk</button>
+  <button data-go="/industri">Industri</button><button data-go="/layanan">Layanan</button>
+  <button data-go="/klien">Klien</button><button data-go="/verifikasi">Support</button>
+  <button data-go="/demo">Demo &amp; Harga</button>
+</nav>
+<main class="demo-main"><h1>Kendali biaya proyek, piutang distribusi, dan pajak dalam satu ERP.</h1>
+<p>Halaman ini hanya untuk menguji widget. Klik tombol rute di atas, lalu buka widget di kanan bawah.</p></main>
+<script>
+document.querySelector('.demo-nav').addEventListener('click',function(e){var g=e.target.getAttribute('data-go');if(g)history.pushState({},'',g)});
+</script>
+
+<!-- ============================================================
+     SISCOM AI WIDGET — mulai salin dari sini sampai "AKHIR WIDGET"
+     Tempel tepat sebelum </body> pada index.html
+     ============================================================ -->
+<style id="sai-css">
+#sai,#sai-fab{
+  --sai-pr:#0f3b78;--sai-pr2:#2f6fd0;--sai-bg:#fff;--sai-sf:#f3f5f9;--sai-tx:#1b2233;--sai-mu:#5d6779;
+  --sai-bd:#dde2ea;--sai-bot:#eef2fb;--sai-user:#0f3b78;--sai-ok:#1f7a3f;--sai-warn:#9a6208;--sai-warnbg:#fdf3dc;
+  font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]):not(.light) #sai{--sai-bg:#1c222c;--sai-sf:#12161d;--sai-tx:#e6e9ef;--sai-mu:#9aa4b5;--sai-bd:#2c3441;--sai-bot:#262e3b;--sai-user:#2f5fb3;--sai-ok:#5cc489;--sai-warn:#f0c36a;--sai-warnbg:#3a2f14}}
+:root[data-theme=dark] #sai,:root.dark #sai{--sai-bg:#1c222c;--sai-sf:#12161d;--sai-tx:#e6e9ef;--sai-mu:#9aa4b5;--sai-bd:#2c3441;--sai-bot:#262e3b;--sai-user:#2f5fb3;--sai-ok:#5cc489;--sai-warn:#f0c36a;--sai-warnbg:#3a2f14}
+#sai *,#sai *::before,#sai *::after{box-sizing:border-box}
+
+/* FAB */
+#sai-fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:2147483000;display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--sai-pr),var(--sai-pr2));color:#fff;border:0;border-radius:999px;padding:13px 20px;font-weight:600;cursor:pointer;
+  box-shadow:0 4px 12px rgba(15,59,120,.25),0 12px 32px rgba(15,59,120,.25);transition:transform .2s ease,box-shadow .2s ease}
+#sai-fab:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(15,59,120,.3),0 16px 40px rgba(15,59,120,.3)}
+#sai-fab:focus-visible,#sai button:focus-visible,#sai textarea:focus-visible{outline:3px solid #7fb0ff;outline-offset:2px}
+#sai-fab[hidden]{display:none}
+
+/* Drawer */
+#sai{position:fixed;top:0;right:0;bottom:0;width:390px;max-width:100%;z-index:2147483001;display:flex;flex-direction:column;background:var(--sai-bg);color:var(--sai-tx);
+  border-left:1px solid var(--sai-bd);box-shadow:-10px 0 40px rgba(0,0,0,.2);transform:translateX(105%);visibility:hidden;transition:transform .28s ease,visibility 0s .28s}
+#sai.open{transform:none;visibility:visible;transition:transform .28s ease}
+.sai-hd{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 12px;background:linear-gradient(135deg,#0f3b78,#2f6fd0);color:#fff}
+.sai-av{flex:none;width:38px;height:38px;border-radius:50%;background:#fff;color:#0f3b78;display:grid;place-items:center;font-weight:800}
+.sai-ti{flex:1;min-width:0}.sai-ti b{display:block}.sai-ti small{opacity:.9}
+.sai-coin{background:#fff;color:#1b2233;border:0;border-radius:8px;padding:4px 9px;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.sai-ib{background:none;border:0;color:#fff;font-size:18px;line-height:1;cursor:pointer;padding:6px 8px;border-radius:8px}
+.sai-ib:hover{background:rgba(255,255,255,.18)}
+#sai-menu{position:absolute;right:10px;top:calc(62px + env(safe-area-inset-top,0px));min-width:210px;background:var(--sai-bg);border:1px solid var(--sai-bd);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:3;padding:4px}
+#sai-menu[hidden]{display:none}
+#sai-menu button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--sai-tx);padding:10px 12px;border-radius:8px;cursor:pointer;font:inherit}
+#sai-menu button:hover{background:var(--sai-sf)}
+
+/* Pesan */
+#sai-log{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
+.sai-m{max-width:92%;padding:9px 12px;border-radius:14px;overflow-wrap:anywhere}
+.sai-b{background:var(--sai-bot);align-self:flex-start}
+.sai-u{background:var(--sai-user);color:#fff;align-self:flex-end}
+.sai-b ol{margin:6px 0;padding-left:20px}
+.sai-who{font-size:11px;font-weight:700;color:var(--sai-ok);margin-bottom:2px}
+.sai-sys{align-self:center;font-size:11px;color:var(--sai-mu);background:var(--sai-sf);border-radius:99px;padding:2px 10px}
+.sai-block{background:#b3261e14;border:1px solid #b3261e55}
+.sai-faq{align-self:stretch;border:1px solid var(--sai-bd);border-radius:12px;padding:8px}
+.sai-faq h4{margin:0 0 6px;font-size:13px}
+.sai-fq{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;background:var(--sai-sf);border:1px solid var(--sai-bd);color:var(--sai-tx);border-radius:10px;padding:8px 10px;margin-top:5px;cursor:pointer;font:inherit}
+.sai-fq:hover{border-color:var(--sai-pr2)}.sai-fq span{color:var(--sai-mu)}
+.sai-src{display:inline-block;font-size:11px;border:1px solid var(--sai-bd);border-radius:99px;padding:1px 8px;color:var(--sai-mu);margin-top:4px}
+.sai-act{display:flex;gap:4px;align-items:center;margin-top:6px;font-size:11px;color:var(--sai-mu)}
+.sai-act button{background:none;border:1px solid var(--sai-bd);border-radius:8px;cursor:pointer;padding:2px 8px;color:var(--sai-tx);font:inherit}
+.sai-act button[aria-pressed=true]{background:var(--sai-pr);color:#fff;border-color:var(--sai-pr)}
+.sai-act .sai-cost{margin-left:auto}
+.sai-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.sai-chips button{border:1px solid var(--sai-pr2);color:var(--sai-pr2);background:var(--sai-bg);border-radius:99px;padding:3px 10px;cursor:pointer;font:inherit;font-size:12px}
+.sai-chips a{border:1px solid var(--sai-pr2);color:#fff;background:var(--sai-pr);border-radius:99px;padding:3px 10px;font-size:12px;text-decoration:none}
+.sai-dots span{display:inline-block;width:6px;height:6px;margin-right:3px;border-radius:50%;background:var(--sai-mu);animation:sai-bl 1s infinite}
+.sai-dots span:nth-child(2){animation-delay:.2s}.sai-dots span:nth-child(3){animation-delay:.4s}
+@keyframes sai-bl{50%{opacity:.2}}
+
+/* Footer */
+.sai-ft{border-top:1px solid var(--sai-bd);padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
+.sai-ft small{display:block;color:var(--sai-mu);font-size:11px;margin-bottom:4px}
+.sai-ban{background:var(--sai-warnbg);color:var(--sai-warn);border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px}
+.sai-row{display:flex;gap:6px;align-items:flex-end}
+.sai-row textarea{flex:1;resize:none;max-height:90px;border:1px solid var(--sai-bd);border-radius:12px;padding:8px 10px;font:inherit;background:var(--sai-sf);color:var(--sai-tx)}
+.sai-snd{width:38px;height:38px;border:0;border-radius:50%;background:var(--sai-pr);color:#fff;font-size:16px;cursor:pointer}
+.sai-snd:disabled,.sai-row textarea:disabled{opacity:.5;cursor:not-allowed}
+@media (max-width:480px){#sai{width:100%;border-left:0}#sai-fab{right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){#sai,#sai-fab,.sai-dots span{transition:none;animation:none}}
+</style>
+
+<button id="sai-fab" type="button" aria-haspopup="dialog" aria-controls="sai" aria-expanded="false">🤖 Tanya SISCOM AI</button>
+<aside id="sai" role="dialog" aria-modal="false" aria-labelledby="sai-title" aria-hidden="true" inert></aside>
+
+<script defer>
+(function () {
+  'use strict';
+  var ROOT = document.getElementById('sai'), FAB = document.getElementById('sai-fab');
+  if (!ROOT || !FAB) return;
+
+  /* ---------- 1. Data: konteks halaman & basis pengetahuan ---------- */
+  // ⚠ Sesuaikan jawaban dengan data resmi SISCOM sebelum produksi.
+  var ROUTES = { '/': 'home', '/industri': 'industri', '/layanan': 'layanan', '/klien': 'klien', '/verifikasi': 'support', '/demo': 'demo' };
+  var CTX = {
+    home:     { l: 'Beranda',        f: ['fitur', 'berdiri', 'kontraktor', 'demo'] },
+    produk:   { l: 'Modul ERP',      f: ['fitur', 'kontraktor', 'distribusi', 'manufaktur'] },
+    industri: { l: 'Industri',       f: ['kontraktor', 'distribusi', 'manufaktur', 'akuntansi'] },
+    layanan:  { l: 'Layanan',        f: ['layanan', 'demo', 'hris', 'kontak'] },
+    klien:    { l: 'Klien',          f: ['klien', 'kontraktor', 'demo', 'kontak'] },
+    support:  { l: 'Support',        f: ['kontak', 'layanan', 'demo', 'fitur'] },
+    demo:     { l: 'Demo & Harga',   f: ['harga', 'demo', 'kontak', 'fitur'] }
+  };
+  var TOPICS = [['Fitur', 'fitur'], ['Kontraktor', 'kontraktor'], ['HRIS', 'hris'], ['Akuntansi', 'akuntansi'], ['Harga', 'harga']];
+  var KB = [
+    { id: 'fitur', q: 'Apa saja fitur unggulan SISCOM?', kw: 'fitur unggulan keunggulan kelebihan modul apa saja', a: 'SISCOM menyatukan kendali biaya proyek, piutang distribusi, dan pajak dalam satu sistem:', l: ['Validasi **pagu anggaran RAP** untuk mencegah pembengkakan biaya', 'Kurva S **realisasi fisik** proyek', 'Pantau **batas kredit outlet** dan aging piutang', 'Laporan **PPh 21 skema TER** dan **e-Faktur** otomatis'], src: 'Profil Produk SISCOM' },
+    { id: 'berdiri', q: 'Sejak kapan SISCOM berdiri?', kw: 'berdiri sejak kapan sejarah perusahaan pengalaman tahun', a: 'SISCOM dikembangkan oleh **PT Shan Informasi Sistem**, berdiri sejak **1994** di Jakarta.', src: 'Tentang Kami' },
+    { id: 'kontraktor', q: 'Apa itu modul ERP Kontraktor?', kw: 'kontraktor construction proyek rap rab kurva opname anggaran konstruksi', a: '**SIS Construction One** mengendalikan pagu anggaran RAP, progress fisik (opname), dan kurva S terpadu, sehingga realisasi vs RAB/RAP bisa dipantau real-time.', src: 'Modul Industri' },
+    { id: 'distribusi', q: 'Apa itu SIS Distribution Suite?', kw: 'distribusi distributor piutang aging kredit outlet gudang', a: '**SIS Distribution Suite** menangani kendali aging piutang, batas kredit outlet, dan perputaran stok multi-gudang.', src: 'Modul Industri' },
+    { id: 'manufaktur', q: 'Bagaimana menghitung HPP produksi?', kw: 'manufaktur produksi hpp bom bill material pabrik', a: '**SIS Manufacturing Suite** menghitung Harga Pokok Produksi (HPP) aktual berbasis **Bill of Materials** bertingkat.', src: 'Modul Industri' },
+    { id: 'hris', q: 'Apakah ada HRIS / payroll?', kw: 'hris payroll gaji karyawan pph21 pph ter absensi sdm', a: 'SISCOM mendukung perhitungan **PPh 21 skema TER**. Untuk cakupan modul HRIS/payroll sesuai kebutuhan Anda, tim kami akan jelaskan detailnya saat **demo**.', src: 'Profil Produk SISCOM' },
+    { id: 'akuntansi', q: 'Bagaimana pembukuan akuntansinya?', kw: 'akuntansi pembukuan buku besar jurnal pajak efaktur faktur laporan keuangan', a: 'Pembukuan **buku besar** berjalan otomatis dari transaksi operasional, dilengkapi penerbitan **e-Faktur** dan laporan pajak perusahaan.', src: 'Profil Produk SISCOM' },
+    { id: 'harga', q: 'Berapa harga SISCOM?', kw: 'harga biaya tarif paket pricing lisensi berapa langganan', a: 'Harga disesuaikan dengan **modul, jumlah user, dan cabang** yang dibutuhkan. Jadwalkan demo untuk mendapat penawaran yang sesuai.', src: 'Halaman Demo', cta: 'demo' },
+    { id: 'demo', q: 'Bagaimana menjadwalkan demo?', kw: 'demo jadwal coba presentasi konsultasi trial', a: 'Buka halaman **Jadwalkan demo**, isi data singkat, dan tim kami akan menghubungi Anda untuk sesi demo sesuai industri Anda.', src: 'Halaman Demo', cta: 'demo' },
+    { id: 'layanan', q: 'Layanan apa saja yang tersedia?', kw: 'layanan implementasi pelatihan training dukungan service migrasi', a: 'Informasi lengkap layanan implementasi dan dukungan tersedia di halaman **Layanan**; tim kami juga dapat merinci sesuai kebutuhan perusahaan Anda.', src: 'Halaman Layanan' },
+    { id: 'klien', q: 'Siapa saja klien SISCOM?', kw: 'klien pelanggan customer referensi portofolio', a: 'Daftar klien dan referensi implementasi dapat dilihat di halaman **Klien**.', src: 'Halaman Klien' },
+    { id: 'kontak', q: 'Bagaimana menghubungi tim SISCOM?', kw: 'kontak hubungi telepon whatsapp alamat support bantuan cs', a: 'Telepon **+62 21 5694 5002** atau WhatsApp **+62-812-9981-7515**. Kantor: Rukan Malibu Blok J No. 75-77, Cengkareng, Jakarta Barat.', src: 'Footer Website' }
+  ];
+  var BY_ID = {}; KB.forEach(function (e) { BY_ID[e.id] = e; });
+  var WA = 'https://wa.me/6281299817515', DEMO_URL = '/demo';
+
+  /* ---------- 2. Guardrail ---------- */
+  var RE_INJECT = /(abaikan|lupakan|ignore|disregard|forget).{0,40}(instruksi|aturan|perintah|instruction|prompt|rules)|system prompt|prompt rahasia|jailbreak|developer mode|\bDAN\b|you are now|berpura-?pura jadi/i;
+  var RE_SECRET = /(password|kata sandi|api[ -]?key|secret|token|kredensial|credential|source ?code|kode sumber|database|struktur tabel|akses admin|env\b)/i;
+  var RE_OFFTOPIC = /(resep|masak|nasi goreng|cuaca|skor|sepak ?bola|politik|pilpres|saham|kripto|bitcoin|film|lagu|horoskop|zodiak|ramalan|puisi|pantun|tebak|coding|bahasa pemrograman)/i;
+  function guard(q) {
+    if (RE_INJECT.test(q)) return { why: 'inject', msg: '🛡️ Permintaan ini tidak dapat diproses. Saya tidak dapat mengubah aturan atau membuka instruksi internal asisten.' };
+    if (RE_SECRET.test(q)) return { why: 'secret', msg: '🔒 Maaf, informasi sensitif seperti kredensial, kode sumber, atau struktur sistem tidak dapat diakses lewat asisten ini.' };
+    if (RE_OFFTOPIC.test(q)) return { why: 'off', msg: '🧭 Pertanyaan itu di luar cakupan saya. Saya fokus pada informasi produk dan modul ERP SISCOM.' };
+    return null;
+  }
+
+  /* ---------- 3. State & util ---------- */
+  var S = { ctx: 'home', coins: 5000, dis: 0, run: 0, built: false, transcript: [] }, el = {};
+  var esc = function (t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var md = function (t) { return esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'); };
+  var fmt = function (n) { return n.toLocaleString('id-ID'); };
+
+  function resolveCtx() {
+    var p = location.pathname.replace(/\/+$/, '') || '/';
+    if (p === '/' && location.hash === '#produk') return 'produk';
+    return ROUTES[p] || 'home';
+  }
+  function add(cls, html) {
+    var d = document.createElement('div'); d.className = cls; d.innerHTML = html;
+    el.log.appendChild(d); el.log.scrollTop = el.log.scrollHeight;
+    S.transcript.push((/sai-u/.test(cls) ? 'User: ' : 'AI: ') + d.textContent.trim());
+    return d;
+  }
+  function faqBtn(id) { return '<button type="button" class="sai-fq" data-act="faq" data-id="' + id + '">' + esc(BY_ID[id].q) + '<span aria-hidden="true">›</span></button>'; }
+  function faqBlock() {
+    var c = CTX[S.ctx];
+    add('sai-faq', '<h4>⭐ Pertanyaan populer – ' + esc(c.l) + '</h4>' + c.f.map(faqBtn).join('') +
+      '<div class="sai-chips" role="group" aria-label="Topik">' + TOPICS.map(function (t) { return '<button type="button" data-act="faq" data-id="' + t[1] + '">' + t[0] + '</button>'; }).join('') + '</div>');
+  }
+  function welcome() {
+    el.log.innerHTML = ''; S.transcript = []; S.dis = 0;
+    add('sai-m sai-b', '<div class="sai-who">SISCOM AI</div>Halo! Saya asisten AI SISCOM ERP. Tanyakan fitur, modul industri, atau demo. Saat ini Anda di halaman <b>' + esc(CTX[S.ctx].l) + '</b>.');
+    faqBlock();
+  }
+
+  /* ---------- 4. Jawaban, koin, eskalasi ---------- */
+  function answer(e, cost) {
+    var h = '<div class="sai-who">SISCOM AI</div>' + md(e.a);
+    if (e.l) h += '<ol>' + e.l.map(function (x) { return '<li>' + md(x) + '</li>'; }).join('') + '</ol>';
+    h += '<div><span class="sai-src">📄 ' + esc(e.src) + '</span></div>';
+    h += '<div class="sai-act" role="group" aria-label="Umpan balik"><button type="button" data-act="up" aria-label="Jawaban membantu" aria-pressed="false">👍</button>' +
+         '<button type="button" data-act="down" aria-label="Jawaban kurang membantu" aria-pressed="false">👎</button>' +
+         '<button type="button" data-act="copy">Salin</button><span class="sai-cost">' + (cost ? '−' + cost + ' koin' : 'FAQ · gratis') + '</span></div>';
+    var rel = CTX[S.ctx].f.filter(function (i) { return i !== e.id; }).slice(0, 2);
+    h += '<div class="sai-chips">' + (e.cta ? '<a href="' + DEMO_URL + '">Jadwalkan demo →</a>' : '') + rel.map(function (i) { return '<button type="button" data-act="faq" data-id="' + i + '">' + esc(BY_ID[i].q) + '</button>'; }).join('') + '</div>';
+    add('sai-m sai-b', h);
+  }
+  function escalate() {
+    add('sai-m sai-b', '🎧 Pilih cara terhubung dengan tim CS:<div class="sai-chips"><a href="' + WA + '" target="_blank" rel="noopener">Live Chat WhatsApp</a>' +
+      '<button type="button" data-act="ticket">Buat tiket + transkrip</button></div>');
+  }
+  function ticket() {
+    var no = 'SIS-' + Date.now().toString().slice(-6);
+    if (navigator.clipboard) navigator.clipboard.writeText('Tiket ' + no + '\n' + S.transcript.join('\n')).catch(function () {});
+    add('sai-sys', 'Tiket ' + no + ' dibuat (simulasi) · transkrip disalin');
+  }
+  function score(q) {
+    var w = q.toLowerCase().split(/[^a-z0-9]+/).filter(function (x) { return x.length > 2; }), best = null, bs = 0;
+    KB.forEach(function (e) {
+      var s = 0, hay = ' ' + e.kw + ' ' + e.q.toLowerCase() + ' ';
+      w.forEach(function (t) { if (hay.indexOf(t) > -1) s++; });
+      if (CTX[S.ctx].f.indexOf(e.id) > -1) s += 0.5;
+      if (s > bs) { bs = s; best = e; }
+    });
+    return { e: best, s: bs };
+  }
+  function ask(q, id) {
+    if (!q) return;
+    var n = ++S.run;
+    add('sai-m sai-u', esc(q));
+    var t = add('sai-m sai-b', '<span class="sai-dots" aria-label="Mengetik"><span></span><span></span><span></span></span>');
+    setTimeout(function () {
+      if (n !== S.run) return;
+      t.remove();
+      if (id) return answer(BY_ID[id], 0);
+      var g = guard(q);
+      if (g) return add('sai-m sai-b sai-block', md(g.msg) + ' <span class="sai-src">tidak dikenakan koin</span>'), faqBlock();
+      var r = score(q);
+      if (r.s >= 1.5) { var c = 15 + (q.length > 80 ? 10 : 0); S.coins = Math.max(0, S.coins - c); refresh(); return answer(r.e, c); }
+      add('sai-m sai-b', 'Maaf, saya belum menemukan jawaban yang cocok. <span class="sai-src">tidak dikenakan koin</span><div class="sai-chips"><button type="button" data-act="cs">Hubungi CS</button></div>');
+      faqBlock();
+    }, 700);
+  }
+  function refresh() {
+    el.coin.textContent = '🪙 ' + fmt(S.coins); el.coin.setAttribute('aria-label', 'Saldo ' + fmt(S.coins) + ' koin AI. Klik untuk isi ulang.');
+    var off = S.coins <= 0; el.in.disabled = off; el.send.disabled = off;
+    el.ban.innerHTML = off ? '<div class="sai-ban" role="status">Koin AI habis. FAQ tetap gratis. Hubungi admin untuk isi ulang.</div>' : S.coins < 500 ? '<div class="sai-ban" role="status">Sisa koin menipis (' + S.coins + ').</div>' : '';
+  }
+  function send() {
+    var v = el.in.value.trim(); if (!v || S.coins <= 0) return;
+    el.in.value = ''; el.cnt.textContent = '0/300 · jawaban AI memakai koin, FAQ gratis'; ask(v);
+  }
+
+  /* ---------- 5. Build UI (lazy, saat pertama dibuka → tidak membebani LCP) ---------- */
+  function build() {
+    ROOT.innerHTML =
+      '<header class="sai-hd"><div class="sai-av" aria-hidden="true">AI</div><div class="sai-ti"><b id="sai-title">SISCOM AI</b><small id="sai-ctx"></small></div>' +
+      '<button type="button" class="sai-coin" id="sai-coin"></button>' +
+      '<button type="button" class="sai-ib" id="sai-mb" aria-label="Menu" aria-haspopup="menu" aria-expanded="false" aria-controls="sai-menu">⋮</button>' +
+      '<button type="button" class="sai-ib" data-act="close" aria-label="Tutup asisten">✕</button></header>' +
+      '<div id="sai-menu" role="menu" hidden><button role="menuitem" data-act="clear">🗑 Hapus percakapan</button><button role="menuitem" data-act="cs">🎧 Hubungi CS / Buat tiket</button><button role="menuitem" data-act="topup">🪙 Isi ulang koin (demo)</button></div>' +
+      '<div id="sai-log" role="log" aria-live="polite" aria-label="Percakapan dengan SISCOM AI" tabindex="0"></div>' +
+      '<div class="sai-ft"><div id="sai-ban"></div><small>Jawaban AI mungkin kurang tepat, beri 👍/👎 sebagai koreksi.</small>' +
+      '<div class="sai-row"><textarea id="sai-in" rows="1" maxlength="300" aria-label="Pertanyaan Anda" placeholder="Ketik pertanyaan Anda di sini…"></textarea>' +
+      '<button type="button" class="sai-snd" id="sai-send" aria-label="Kirim">➤</button></div><small id="sai-cnt" style="text-align:right">0/300 · jawaban AI memakai koin, FAQ gratis</small></div>';
+    ['log', 'coin', 'ctx', 'ban', 'in', 'send', 'cnt', 'menu', 'mb'].forEach(function (k) { el[k] = ROOT.querySelector('#sai-' + k); });
+    el.send.onclick = send;
+    el.in.onkeydown = function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+    el.in.oninput = function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 90) + 'px'; el.cnt.textContent = this.value.length + '/300 · jawaban AI memakai koin, FAQ gratis'; };
+    S.built = true; setCtx(resolveCtx(), true); refresh(); welcome();
+  }
+
+  /* ---------- 6. Event delegasi ---------- */
+  ROOT.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b) { if (e.target.closest('#sai-mb')) toggleMenu(); return; }
+    var a = b.getAttribute('data-act');
+    if (a !== 'clear' && a !== 'cs' && a !== 'topup') toggleMenu(false);
+    if (a === 'faq') ask(BY_ID[b.dataset.id].q, b.dataset.id);
+    else if (a === 'close') close();
+    else if (a === 'clear') { S.run++; toggleMenu(false); welcome(); }
+    else if (a === 'cs') { toggleMenu(false); escalate(); }
+    else if (a === 'ticket') ticket();
+    else if (a === 'topup') { toggleMenu(false); S.coins = 5000; refresh(); add('sai-sys', 'Koin diisi ulang (demo)'); }
+    else if (a === 'up' || a === 'down') {
+      b.parentNode.querySelectorAll('[aria-pressed]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      if (a === 'up') return add('sai-sys', 'Terima kasih atas masukannya 👍');
+      S.dis++;
+      add('sai-m sai-b', 'Maaf kurang membantu. Apa yang kurang?<div class="sai-chips"><button type="button" data-act="reason">Kurang jelas</button><button type="button" data-act="reason">Tidak sesuai kebutuhan</button><button type="button" data-act="reason">Informasi salah</button></div>' +
+        (S.dis >= 2 ? '<br>Mau langsung dibantu tim CS?<div class="sai-chips"><button type="button" data-act="cs">Hubungi CS</button></div>' : ''));
+    }
+    else if (a === 'reason') { add('sai-sys', 'Masukan "' + esc(b.textContent) + '" terkirim ke tim Product'); b.parentNode.style.opacity = .6; }
+    else if (a === 'copy' && navigator.clipboard) { navigator.clipboard.writeText(b.closest('.sai-m').innerText); b.textContent = 'Tersalin ✓'; }
+  });
+  el.coinHandler = ROOT.addEventListener('click', function (e) { if (e.target.closest('#sai-coin')) { toggleMenu(false); add('sai-m sai-b', '🪙 Koin dipakai untuk jawaban AI bebas (±15–25 koin). FAQ populer selalu gratis.<div class="sai-chips"><button type="button" data-act="topup">Isi ulang (demo)</button></div>'); } });
+  function toggleMenu(force) {
+    var open = typeof force === 'boolean' ? force : el.menu.hidden;
+    el.menu.hidden = !open; el.mb.setAttribute('aria-expanded', String(open));
+    if (open) el.menu.querySelector('button').focus();
+  }
+  function open() {
+    if (!S.built) build();
+    ROOT.classList.add('open'); ROOT.removeAttribute('inert'); ROOT.setAttribute('aria-hidden', 'false');
+    FAB.hidden = true; FAB.setAttribute('aria-expanded', 'true');
+    setTimeout(function () { el.in.focus(); }, 280);
+  }
+  function close() {
+    ROOT.classList.remove('open'); ROOT.setAttribute('inert', ''); ROOT.setAttribute('aria-hidden', 'true');
+    FAB.hidden = false; FAB.setAttribute('aria-expanded', 'false'); FAB.focus();
+  }
+  FAB.addEventListener('click', open);
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !ROOT.classList.contains('open')) return;
+    if (!el.menu.hidden) { toggleMenu(false); el.mb.focus(); } else close();
+  });
+
+  /* ---------- 7. Deteksi rute SPA ---------- */
+  function setCtx(k, silent) {
+    S.ctx = k; if (!S.built) return;
+    el.ctx.textContent = 'Konteks: ' + CTX[k].l;
+    if (!silent && ROOT.classList.contains('open')) { add('sai-sys', 'Konteks berubah ke ' + CTX[k].l); faqBlock(); }
+  }
+  function onNav() { var k = resolveCtx(); if (k !== S.ctx) setCtx(k); }
+  ['pushState', 'replaceState'].forEach(function (m) {
+    var orig = history[m];
+    history[m] = function () { var r = orig.apply(this, arguments); window.dispatchEvent(new Event('sai:nav')); return r; };
+  });
+  ['popstate', 'hashchange', 'sai:nav'].forEach(function (ev) { window.addEventListener(ev, onNav); });
+  S.ctx = resolveCtx();
+})();
+</script>
+<!-- ===================== AKHIR WIDGET ===================== -->
+</body>
+</html>

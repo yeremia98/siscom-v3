@@ -25,6 +25,7 @@ import { ModuleQuickViewModal } from './components/ModuleQuickViewModal';
 import { DemoModal } from './components/DemoModal';
 import { VERTICAL_MODULES, SOLUTION_MODULES } from './content/modules';
 import { FISCAL_ARTICLES } from './content/articles';
+import { SiscomAIWidget } from './components/SiscomAIWidget';
 
 function AppContent() {
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
@@ -148,9 +149,9 @@ function AppContent() {
       );
     }
 
-    // 2. Modul Solusi (/modul-solusi and /modul-solusi/:slug)
-    if (currentRoute.startsWith('/modul-solusi')) {
-      const slug = currentRoute.replace('/modul-solusi', '').replace('/', '');
+    // 2. Modul Solusi (/modul-solusi and /modul-solusi/:slug, or /layanan)
+    if (currentRoute.startsWith('/modul-solusi') || currentRoute === '/layanan') {
+      const slug = currentRoute.replace('/modul-solusi', '').replace('/layanan', '').replace('/', '');
       return (
         <SolutionModulesPage
           activeSlug={slug || undefined}
@@ -160,9 +161,9 @@ function AppContent() {
       );
     }
 
-    // 3. Modul Vertikal (/modul-vertikal and /modul-vertikal/:slug)
-    if (currentRoute.startsWith('/modul-vertikal')) {
-      const slug = currentRoute.replace('/modul-vertikal', '').replace('/', '');
+    // 3. Modul Vertikal (/modul-vertikal and /modul-vertikal/:slug, or /industri)
+    if (currentRoute.startsWith('/modul-vertikal') || currentRoute === '/industri') {
+      const slug = currentRoute.replace('/modul-vertikal', '').replace('/industri', '').replace('/', '');
       return (
         <VerticalModulesPage
           activeSlug={slug || undefined}
@@ -267,6 +268,12 @@ function AppContent() {
         isOpen={isDemoModalOpen}
         onClose={() => setIsDemoModalOpen(false)}
         initialModule={demoInitialModule}
+      />
+
+      {/* Enterprise SISCOM AI Assistant Widget (Global Layout) */}
+      <SiscomAIWidget
+        currentRoute={currentRoute}
+        onNavigate={navigateTo}
       />
     </div>
   );
